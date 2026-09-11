@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Números Aleatórios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .display-area {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .number-display {
+            font-size: 5em;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .type-display {
+            font-size: 2em;
+            color: #FFD700;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .button:active {
+            transform: translateY(-1px);
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .used-numbers {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .used-numbers h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .numbers-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .number-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .progress {
+            margin: 20px 0;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .game-over {
+            font-size: 1.5em;
+            color: #f5576c;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            background: #f0f0f0;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .instructions li {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Jogo de Números</h1>
+        <p class="subtitle">Números Aleatórios de 1 a 10</p>
+
+        <div class="instructions">
+            <strong>Como jogar:</strong>
+            <ul>
+                <li>Clique no botão "Próximo Número"</li>
+                <li>Um número aleatório de 1 a 10 será exibido</li>
+                <li>O sistema mostra se é PAR ou ÍMPAR</li>
+                <li>Cada número aparece apenas uma vez</li>
+                <li>Continue até revelar todos os 10 números!</li>
+            </ul>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="display-area">
+            <div class="number-display" id="numberDisplay">?</div>
+            <div class="type-display" id="typeDisplay"></div>
+        </div>
+
+        <button class="button" id="nextBtn" onclick="getNextNumber()">
+            ➜ Próximo Número
+        </button>
+        <button class="button reset-btn" onclick="resetGame()">
+            🔄 Recomeçar
+        </button>
+
+        <div class="used-numbers">
+            <h3>Números Revelados: <span id="count">0</span>/10</h3>
+            <div class="numbers-list" id="numbersList"></div>
+        </div>
+
+        <div id="gameOverMessage"></div>
+    </div>
+
+    <script>
+        // Inicializar array com números de 1 a 10
+        let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        let usedNumbers = [];
+        let currentNumber = null;
+
+        // Função para embaralhar array (Fisher-Yates)
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Embaralhar números no início
+        numbers = shuffleArray(numbers);
+
+        function getNextNumber() {
+            if (numbers.length === 0) {
+                return;
+            }
+
+            // Pegar o próximo número do array embaralhado
+            currentNumber = numbers.shift();
+            usedNumbers.push(currentNumber);
+
+            // Determinar se é par ou impar
+            const isEven = currentNumber % 2 === 0;
+            const type = isEven ? 'PAR ✓' : 'ÍMPAR ✗';
+            const typeColor = isEven ? '#4CAF50' : '#FF6B6B';
+
+            // Atualizar display
+            document.getElementById('numberDisplay').textContent = currentNumber;
+            document.getElementById('typeDisplay').textContent = type;
+            document.getElementById('typeDisplay').style.color = typeColor;
+
+            // Atualizar lista de números usados
+            updateNumbersList();
+
+            // Atualizar contagem
+            document.getElementById('count').textContent = usedNumbers.length;
+
+            // Atualizar barra de progresso
+            const progress = (usedNumbers.length / 10) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Desabilitar botão se não houver mais números
+            document.getElementById('nextBtn').disabled = numbers.length === 0;
+
+            // Verificar se o jogo acabou
+            if (numbers.length === 0) {
+                endGame();
+            }
+        }
+
+        function updateNumbersList() {
+            const numbersList = document.getElementById('numbersList');
+            numbersList.innerHTML = '';
+
+            // Ordenar números usados para melhor visualização
+            const sortedUsed = [...usedNumbers].sort((a, b) => a - b);
+
+            sortedUsed.forEach(num => {
+                const div = document.createElement('div');
+                div.className = 'number-item';
+                div.textContent = num;
+                numbersList.appendChild(div);
+            });
+        }
+
+        function endGame() {
+            const gameOverDiv = document.getElementById('gameOverMessage');
+            gameOverDiv.innerHTML = '<div class="game-over">🎉 Parabéns! Você revelou todos os números!</div>';
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function resetGame() {
+            numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            usedNumbers = [];
+            currentNumber = null;
+
+            // Embaralhar novamente
+            numbers = shuffleArray(numbers);
+
+            // Resetar display
+            document.getElementById('numberDisplay').textContent = '?';
+            document.getElementById('typeDisplay').textContent = '';
+            document.getElementById('count').textContent = '0';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('gameOverMessage').innerHTML = '';
+            document.getElementById('numbersList').innerHTML = '';
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        // Resetar ao carregar a página
+        window.onload = function() {
+            resetGame();
+        };
+    </script>
+</body>
+</html>
